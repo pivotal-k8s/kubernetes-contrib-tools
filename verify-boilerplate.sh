@@ -18,14 +18,33 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+if [ "$(uname)" = 'Darwin' ]; then
+  readlinkf(){ perl -MCwd -e 'print Cwd::abs_path shift' "$1";}
+else
+  readlinkf(){ readlink -f "$1"; }
+fi
+
 # shellcheck disable=SC2128
-SCRIPT_DIR=$(dirname "${BASH_SOURCE}")
+SCRIPT_DIR="$(cd "$(dirname "$(readlinkf "$BASH_SOURCE")")" ; pwd)"
+
+# We assume the link to the script ( {ensure,verify}-boilerplate.sh ) to be
+# located in a subdirectory of the project root, e.g. in
+# - <root>/hack/verify-boilerplate.sh
+# - <root>/bin/verify-boilerplate.sh
+# Alternatively, you can set the project root by setting the variable
+# `PROJECT_ROOT`.
+#
+# shellcheck disable=SC2128
+: "${PROJECT_ROOT:="$(cd "$(dirname "$BASH_SOURCE")/.." ; pwd)"}"
 
 boilerDir="${SCRIPT_DIR}/boilerplate/"
 boiler="${boilerDir}/boilerplate.py"
 
 verify() {
-  files_need_boilerplate=($(${boiler} "$@"))
+  # shellcheck disable=SC2207
+  files_need_boilerplate=(
+    $( "$boiler" --rootdir="$PROJECT_ROOT" --boilerplate-dir="$boilerDir" "$@")
+  )
 
   # Run boilerplate check
   if [[ ${#files_need_boilerplate[@]} -gt 0 ]]; then
@@ -38,7 +57,7 @@ verify() {
 }
 
 ensure() {
-  "$boiler" --ensure "$@"
+  "$boiler" --rootdir="$PROJECT_ROOT" --boilerplate-dir="$boilerDir" --ensure "$@"
 }
 
 case "$0" in
@@ -49,7 +68,12 @@ case "$0" in
     verify "$@"
     ;;
   *)
-    echo "unknown command '$0'" >&2
+    {
+      echo "unknown command '$0'"
+      echo ""
+      echo "Call the script as either 'verify-boilerplate.sh' or 'ensure-boilerplate.sh'"
+    } >&2
+
     exit 1
     ;;
 esac

@@ -1,8 +1,8 @@
 # kubernetes contribution tools 
 
 This repo holds tools for kubernetes contributors, it is intended to be used in
-kubernetes (related) repos ranging from [k/k repo](github.com/kubernetes/kubernetes)
-to [kubernetes-sigs repos](github.com/kubernetes-sigs).
+kubernetes (related) repos ranging from [k/k repo](https://github.com/kubernetes/kubernetes)
+to [kubernetes-sigs repos](https://github.com/kubernetes-sigs).
 
 ## Using, Installation
 
@@ -21,11 +21,11 @@ need to be named `verify-boilerplate.sh`/`ensure-boilerplate.sh`.
 
 #### Use
 
-- `verify-boilerplate.sh`  
+- `verify-boilerplate.sh`
   Checks all applicable files in the repo for their license/copyright header,
   and warns if the header is missing for a file.
 
-- `ensure-boilerplate.sh`  
+- `ensure-boilerplate.sh`
   Will add a license/copyright header for files which don't have one yet. It
   will not update existing headers.
 
@@ -50,9 +50,9 @@ You can put a config file into the root of your repo named `boilerplate.json`. T
 }
 ```
 Currently supported settings are
-- `dirs_to_skip`  
+- `dirs_to_skip`
   A list of directories which is excluded when checking or adding the headers
-- `not_generated_files_to_skip`  
+- `not_generated_files_to_skip`
   A list of all the files contain 'DO NOT EDIT', but are not generated
 
 All other settings will be ignored.
